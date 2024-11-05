@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/Home";
-import RequireAuth from "../pages/RequireAuth";
+import RequireAuth from "../features/auth/RequireAuth";
 import Todo from "../pages/Todo";
 import Auth from "../pages/Auth";
-import SideBar from "./SideBar";
+import GlobalLayout from "./GlobalLayout";
 
 interface RouterBase {
   id: number;
@@ -30,7 +30,7 @@ export const routerData: UserAccessibleRouterElement[] = [
 
 export const routers = createBrowserRouter([
   {
-    element: <SideBar routerData={routerData} />,
+    element: <GlobalLayout routerData={routerData} />,
     children: [
       ...routerData.map((router) => {
         if (router.withAuth) {
@@ -47,25 +47,3 @@ export const routers = createBrowserRouter([
     ],
   },
 ]);
-
-// const SidebarContent = routerData.
-
-/**
- * 
-export const SidebarContent: SidebarElement[] = routerData.reduce(
-  (prev, router) => {
-    // TODO 4-1. isAdminOnly 프로퍼티를 추가하여 admin 페이지로 가는 사이드바 요소를 선택적으로 렌더링 (어드민에게만 보이도록 하기)
-    if (!router.withAuth) return prev;
-
-    return [
-      ...prev,
-      {
-        id: router.id,
-        path: router.path,
-        label: router.label,
-      },
-    ];
-  },
-  [] as SidebarElement[]
-);
- */

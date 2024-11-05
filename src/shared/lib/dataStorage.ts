@@ -14,4 +14,8 @@ export class BaseStorage<T> {
   setData(data: T) {
     return this.#storage.setItem(this.#key, JSON.stringify(data));
   }
+
+  deleteData() {
+    return this.#storage.removeItem(this.#key);
+  }
 }

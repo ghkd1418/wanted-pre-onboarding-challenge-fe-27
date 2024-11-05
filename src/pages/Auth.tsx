@@ -1,9 +1,8 @@
-import { HTTPError } from "ky";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../shared/lib/api";
 
 import validator from "../shared/lib/validator";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../app/useAuth";
 
@@ -12,12 +11,36 @@ interface IAuthResponse {
   message: string;
 }
 
+const DEFAULT_PATH = "/";
+
+//TODO: 로그인 완료 시 사이드바에서 Auth 페이지 지워주기 혹은 마이페이지로 변경 해주기
+
 function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signin } = useAuth();
+  const { signin, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || DEFAULT_PATH;
+
+  const handleAlreadyLoggedIn = () => {
+    toast("이미 로그인 되어있습니다.");
+    navigate(from);
+  };
+
+  useEffect(() => {
+    if (user) {
+      handleAlreadyLoggedIn();
+    }
+  }, []);
+
+  const performLogin = () => {
+    // 로그인 성공 시 원래 가고자 했던 페이지로 리다이렉트
+    navigate(from);
+  };
+
+  const failAuthAction = () => {};
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const email = event.target.value;
@@ -31,7 +54,7 @@ function Auth() {
     setPassword(password);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
@@ -41,40 +64,33 @@ function Auth() {
             email,
             password,
           },
+          showErrorToast: true,
         })
         .json();
 
       toast.success(message);
-      signin(token, () => navigate("/todos"));
-    } catch (error) {
-      if (error instanceof HTTPError) {
-        const errorMessage = await error.response.json();
-
-        console.error("Error message:", errorMessage.details);
-        toast.error(errorMessage.details);
-      } else {
-        console.error("Network error:", error);
-      }
+      signin(token, performLogin);
+    } catch {
+      failAuthAction();
     }
   };
 
   const handleSignup = async () => {
     try {
-      await api.post("users/create", {
-        json: {
-          email,
-          password,
-        },
-      });
-    } catch (error) {
-      if (error instanceof HTTPError) {
-        const errorMessage = await error.response.json();
-        console.error("Error message:", errorMessage.details);
+      const { token, message } = await api
+        .post<IAuthResponse>("users/create", {
+          json: {
+            email,
+            password,
+          },
+          showErrorToast: true,
+        })
+        .json();
 
-        toast.error(errorMessage.details);
-      } else {
-        console.error("Network error:", error);
-      }
+      toast.success(message + "\n\n가입하신 계정으로 로그인 되었습니다.");
+      signin(token, performLogin);
+    } catch {
+      failAuthAction();
     }
   };
 
@@ -84,7 +100,7 @@ function Auth() {
   return (
     <div>
       <h3>로그인페이지</h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLogin}>
         <label htmlFor="email">
           email
           <br />

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { authStorage } from "../shared/lib/authStorage";
+import { authStorage } from "../../shared/lib/authStorage";
 
 interface AuthContextType {
   user: string | null;

@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../app/useAuth";
+import { useAuth } from "../../app/useAuth";
 import toast from "react-hot-toast";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {

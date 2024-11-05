@@ -1,12 +1,15 @@
-import { Link, Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserAccessibleRouterElement } from "./router";
+import SideBar from "../widgets/SideBar";
 import { useAuth } from "./useAuth";
+import toast from "react-hot-toast";
 
-function SideBar({
+function GlobalLayout({
   routerData,
 }: {
   routerData: UserAccessibleRouterElement[];
 }) {
+  const navigate = useNavigate();
   const auth = useAuth();
 
   const filteredRouterData = routerData.filter((router) => {
@@ -19,16 +22,19 @@ function SideBar({
     }
   });
 
+  const handleSignout = () => {
+    auth.signout(() => {
+      toast("로그아웃 되었습니다.");
+      navigate("/");
+    });
+  };
+
   return (
-    <ul>
-      {filteredRouterData.map((router) => (
-        <li key={router.id}>
-          <Link to={router.path}>{router.label}</Link>
-        </li>
-      ))}
-      <Outlet />
-    </ul>
+    <>
+      <SideBar routerData={filteredRouterData} />
+      {auth.user && <button onClick={handleSignout}>로그아웃</button>}
+    </>
   );
 }
 
-export default SideBar;
+export default GlobalLayout;

@@ -5,9 +5,12 @@ const KEY = "AUTH_STORAGE";
 class AuthStorage extends BaseStorage<string | null> {
   constructor() {
     super(KEY);
+    this.initializeStorage();
+  }
 
-    if (!super.getData()) {
-      super.setData(null);
+  private initializeStorage() {
+    if (!this.getData()) {
+      this.setData(null);
     }
   }
 
@@ -20,7 +23,7 @@ class AuthStorage extends BaseStorage<string | null> {
   }
 
   clearAuthToken() {
-    this.setData(null);
+    this.deleteData();
   }
 }
 
