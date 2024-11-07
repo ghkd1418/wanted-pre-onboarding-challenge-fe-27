@@ -1,17 +1,19 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../app/useAuth";
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
+
+import { Navigate, useLocation } from 'react-router-dom';
+
+import { useAuth } from '@/app/useAuth';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  const location = useLocation();
+	const { user } = useAuth();
+	const location = useLocation();
 
-  if (!user) {
-    toast("권한 없음");
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
+	if (!user) {
+		toast('권한 없음');
+		return <Navigate to="/auth" state={{ from: location }} replace />;
+	}
 
-  return children;
+	return children;
 }
 
 export default RequireAuth;

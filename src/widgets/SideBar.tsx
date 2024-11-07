@@ -1,21 +1,22 @@
-import { Link, Outlet } from "react-router-dom";
-import { UserAccessibleRouterElement } from "../app/router";
+import { Link, Outlet } from 'react-router-dom';
+
+import type { UserAccessibleRouterElement } from '@/app/router';
 
 function SideBar({
-  routerData,
+	routerData,
 }: {
-  routerData: UserAccessibleRouterElement[];
+	routerData: UserAccessibleRouterElement[];
 }) {
-  return (
-    <ul>
-      {routerData.map((router) => (
-        <li key={router.id}>
-          <Link to={router.path}>{router.label}</Link>
-        </li>
-      ))}
-      <Outlet />
-    </ul>
-  );
+	return (
+		<ul>
+			{routerData.map((router) => (
+				<li key={router.id}>
+					<Link to={router.path}>{router.label}</Link>
+				</li>
+			))}
+			<Outlet />
+		</ul>
+	);
 }
 
 export default SideBar;

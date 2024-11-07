@@ -1,149 +1,155 @@
-import { useEffect, useState } from "react";
-import api from "../shared/lib/api";
+import { useEffect, useState } from 'react';
 
-import validator from "../shared/lib/validator";
-import { useLocation, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { useAuth } from "../app/useAuth";
+import toast from 'react-hot-toast';
+
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useAuth } from '@/app/useAuth';
+
+import api from '@/shared/lib/api';
+import validator from '@/shared/lib/validator';
 
 interface IAuthResponse {
-  token: string;
-  message: string;
+	token: string;
+	message: string;
 }
 
-const DEFAULT_PATH = "/";
+const DEFAULT_PATH = '/';
 
 //TODO: 로그인 완료 시 사이드바에서 Auth 페이지 지워주기 혹은 마이페이지로 변경 해주기
 
 function Auth() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 
-  const { signin, user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from || DEFAULT_PATH;
+	const MY_CONSTANT = 'aa';
+	console.log(MY_CONSTANT);
 
-  const handleAlreadyLoggedIn = () => {
-    toast("이미 로그인 되어있습니다.");
-    navigate(from);
-  };
+	const { signin, user } = useAuth();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const from = location.state?.from || DEFAULT_PATH;
 
-  useEffect(() => {
-    if (user) {
-      handleAlreadyLoggedIn();
-    }
-  }, []);
+	const handleAlreadyLoggedIn = () => {
+		toast('이미 로그인 되어있습니다.');
+		navigate(from);
+	};
 
-  const performLogin = () => {
-    // 로그인 성공 시 원래 가고자 했던 페이지로 리다이렉트
-    navigate(from);
-  };
+	useEffect(() => {
+		if (user) {
+			handleAlreadyLoggedIn();
+		}
+	}, []);
 
-  const failAuthAction = () => {};
+	const performLogin = () => {
+		// 로그인 성공 시 원래 가고자 했던 페이지로 리다이렉트
+		navigate(from);
+	};
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const email = event.target.value;
+	const failAuthAction = () => {};
 
-    setEmail(email);
-  };
+	const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const email = event.target.value;
 
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const password = event.target.value;
+		setEmail(email);
+	};
 
-    setPassword(password);
-  };
+	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const password = event.target.value;
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+		setPassword(password);
+	};
 
-    try {
-      const { token, message } = await api
-        .post<IAuthResponse>("users/login", {
-          json: {
-            email,
-            password,
-          },
-          showErrorToast: true,
-        })
-        .json();
+	const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
 
-      toast.success(message);
-      signin(token, performLogin);
-    } catch {
-      failAuthAction();
-    }
-  };
+		try {
+			const { token, message } = await api
+				.post<IAuthResponse>('users/login', {
+					json: {
+						email,
+						password,
+					},
+					showErrorToast: true,
+				})
+				.json();
 
-  const handleSignup = async () => {
-    try {
-      const { token, message } = await api
-        .post<IAuthResponse>("users/create", {
-          json: {
-            email,
-            password,
-          },
-          showErrorToast: true,
-        })
-        .json();
+			toast.success(message);
+			signin(token, performLogin);
+		} catch {
+			failAuthAction();
+		}
+	};
 
-      toast.success(message + "\n\n가입하신 계정으로 로그인 되었습니다.");
-      signin(token, performLogin);
-    } catch {
-      failAuthAction();
-    }
-  };
+	const handleSignup = async () => {
+		try {
+			const { token, message } = await api
+				.post<IAuthResponse>('users/create', {
+					json: {
+						email,
+						password,
+					},
+					showErrorToast: true,
+				})
+				.json();
 
-  const isSubmitDisabled =
-    !validator.isEmail(email) || !validator.isLength(password, { min: 8 });
+			toast.success(message + '\n\n가입하신 계정으로 로그인 되었습니다.');
+			signin(token, performLogin);
+		} catch {
+			failAuthAction();
+		}
+	};
 
-  return (
-    <div>
-      <h3>로그인페이지</h3>
-      <form onSubmit={handleLogin}>
-        <label htmlFor="email">
-          email
-          <br />
-          <input
-            type="text"
-            name="email"
-            value={email}
-            onChange={handleEmailChange}
-            autoFocus
-            required
-          />
-        </label>
-        <br />
-        <br />
-        <label htmlFor="password">
-          password
-          <br />
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={handlePasswordChange}
-            required
-          />
-        </label>
-        <br />
-        <button
-          type="submit"
-          disabled={isSubmitDisabled}
-          style={{
-            backgroundColor: !isSubmitDisabled ? "#0073e5" : "lightgray",
-            color: !isSubmitDisabled ? "white" : "gray",
-            opacity: !isSubmitDisabled ? 1 : 0.5,
-            border: "none",
-            cursor: !isSubmitDisabled ? "pointer" : "not-allowed",
-          }}
-        >
-          로그인
-        </button>
-      </form>
-      <button onClick={handleSignup}>회원가입</button>
-    </div>
-  );
+	const isSubmitDisabled =
+		!validator.isEmail(email) || !validator.isLength(password, { min: 8 });
+
+	return (
+		<div>
+			<h3>로그인페이지</h3>
+			<form onSubmit={handleLogin}>
+				<label htmlFor="email">
+					email
+					<br />
+					<input
+						type="text"
+						name="email"
+						value={email}
+						onChange={handleEmailChange}
+						autoFocus
+						required
+					/>
+				</label>
+				<br />
+				<br />
+				<label htmlFor="password">
+					password
+					<br />
+					<input
+						type="password"
+						name="password"
+						value={password}
+						onChange={handlePasswordChange}
+						required
+					/>
+				</label>
+				<br />
+				<button
+					type="submit"
+					disabled={isSubmitDisabled}
+					style={{
+						backgroundColor: !isSubmitDisabled ? '#0073e5' : 'lightgray',
+						color: !isSubmitDisabled ? 'white' : 'gray',
+						opacity: !isSubmitDisabled ? 1 : 0.5,
+						border: 'none',
+						cursor: !isSubmitDisabled ? 'pointer' : 'not-allowed',
+					}}
+				>
+					로그인
+				</button>
+			</form>
+			<button onClick={handleSignup}>회원가입</button>
+		</div>
+	);
 }
 
 export default Auth;

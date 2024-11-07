@@ -1,42 +1,42 @@
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from 'react';
 
-import Input from "../../shared/ui/Input";
+import Input from '@/shared/ui/Input';
 
 interface TodoFormProps {
-  createTodo: (task: { title: string; content: string }) => Promise<void>;
+	createTodo: (task: { title: string; content: string }) => Promise<void>;
 }
 
 function TodoForm({ createTodo }: TodoFormProps) {
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const contentTextAreatRef = useRef<HTMLTextAreaElement>(null);
+	const titleInputRef = useRef<HTMLInputElement>(null);
+	const contentTextAreatRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (titleInputRef.current) {
-      titleInputRef.current.focus();
-    }
-  }, []);
+	useEffect(() => {
+		if (titleInputRef.current) {
+			titleInputRef.current.focus();
+		}
+	}, []);
 
-  //TODO: 입력필드 제한
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+	//TODO: 입력필드 제한
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 
-    if (titleInputRef.current && contentTextAreatRef.current) {
-      createTodo({
-        title: titleInputRef.current.value,
-        content: contentTextAreatRef.current.value,
-      });
+		if (titleInputRef.current && contentTextAreatRef.current) {
+			createTodo({
+				title: titleInputRef.current.value,
+				content: contentTextAreatRef.current.value,
+			});
 
-      titleInputRef.current.value = "";
-      contentTextAreatRef.current.value = "";
-    }
-  };
+			titleInputRef.current.value = '';
+			contentTextAreatRef.current.value = '';
+		}
+	};
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <Input name="title" ref={titleInputRef} />
-      <textarea name="content" ref={contentTextAreatRef} />
-      <button type="submit">추가하기</button>
-    </form>
-  );
+	return (
+		<form onSubmit={handleSubmit}>
+			<Input name="title" ref={titleInputRef} />
+			<textarea name="content" ref={contentTextAreatRef} />
+			<button type="submit">추가하기</button>
+		</form>
+	);
 }
 export default TodoForm;
